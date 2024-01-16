@@ -1,5 +1,6 @@
 import 'package:logger/logger.dart' as dart_log;
 import 'package:intl/intl.dart';
+import 'dart:convert';
 
 /*
  3 Debug
@@ -46,12 +47,12 @@ class SingleLog {
   }
 
   void msg(String mesg) {
-    data["message"] = mesg;
+    data["LOGGERID"] = mesg;
     data["service"] = log.service;
 
     DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
-    data["date"] = formattedDate;
+    String formattedDate = DateFormat('yyyy-MM-ddTkk:mm:ss').format(now);
+    data["TIME"] = formattedDate;
 
     switch (level) {
       case -1:
@@ -72,6 +73,37 @@ class SingleLog {
       default:
         log.dlog.e(data);
     }
+  }
+
+  String getMsg(String mesg) {
+    data["LOGGERID"] = mesg;
+    data["service"] = log.service;
+
+    switch (level) {
+      case -1:
+        data["LEVEL"] = "FATAL";
+        break;
+      case 0:
+        data["LEVEL"] = "ERROR";
+        break;
+      case 1:
+        data["LEVEL"] = "INFO";
+        break;
+      case 2:
+        data["LEVEL"] = "WARN";
+        break;
+      case 3:
+        data["LEVEL"] = "DEBUG";
+        break;
+      default:
+        data["LEVEL"] = level;
+    }
+
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-ddTkk:mm:ss').format(now);
+    data["TIME"] = formattedDate;
+
+    return json.encode(data);
   }
 }
 

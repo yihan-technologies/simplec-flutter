@@ -96,3 +96,46 @@ final $typed_data.Uint8List transferSingleDescriptor = $convert.base64Decode(
     'Cg5UcmFuc2ZlclNpbmdsZRIQCgNJTlMYASABKAlSA0lOUxISCgREQVRBGAIgASgMUgREQVRBEh'
     'AKA0VSUhgDIAEoCVIDRVJSEg4KAklEGAQgASgJUgJJRA==');
 
+@$core.Deprecated('Use notifierStandardReturnDescriptor instead')
+const NotifierStandardReturn$json = {
+  '1': 'NotifierStandardReturn',
+  '2': [
+    {'1': 'Code', '3': 1, '4': 1, '5': 4, '10': 'Code'},
+    {'1': 'Message', '3': 2, '4': 1, '5': 9, '10': 'Message'},
+  ],
+};
+
+/// Descriptor for `NotifierStandardReturn`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List notifierStandardReturnDescriptor = $convert.base64Decode(
+    'ChZOb3RpZmllclN0YW5kYXJkUmV0dXJuEhIKBENvZGUYASABKARSBENvZGUSGAoHTWVzc2FnZR'
+    'gCIAEoCVIHTWVzc2FnZQ==');
+
+@$core.Deprecated('Use changeStateDescriptor instead')
+const ChangeState$json = {
+  '1': 'ChangeState',
+  '2': [
+    {'1': 'Comp', '3': 1, '4': 1, '5': 9, '10': 'Comp'},
+    {'1': 'Field', '3': 2, '4': 1, '5': 9, '10': 'Field'},
+    {'1': 'Action', '3': 3, '4': 1, '5': 9, '10': 'Action'},
+    {'1': 'Value', '3': 4, '4': 1, '5': 9, '10': 'Value'},
+  ],
+};
+
+/// Descriptor for `ChangeState`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List changeStateDescriptor = $convert.base64Decode(
+    'CgtDaGFuZ2VTdGF0ZRISCgRDb21wGAEgASgJUgRDb21wEhQKBUZpZWxkGAIgASgJUgVGaWVsZB'
+    'IWCgZBY3Rpb24YAyABKAlSBkFjdGlvbhIUCgVWYWx1ZRgEIAEoCVIFVmFsdWU=');
+
+@$core.Deprecated('Use saveLocalDescriptor instead')
+const SaveLocal$json = {
+  '1': 'SaveLocal',
+  '2': [
+    {'1': 'Key', '3': 1, '4': 1, '5': 9, '10': 'Key'},
+    {'1': 'Value', '3': 2, '4': 1, '5': 9, '10': 'Value'},
+  ],
+};
+
+/// Descriptor for `SaveLocal`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List saveLocalDescriptor = $convert.base64Decode(
+    'CglTYXZlTG9jYWwSEAoDS2V5GAEgASgJUgNLZXkSFAoFVmFsdWUYAiABKAlSBVZhbHVl');
+

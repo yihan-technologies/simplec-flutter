@@ -169,28 +169,30 @@ class StateManger {
     }
   }
 
-  void setUpdateFieldListener(
-      String comp, String key, String field, void Function(dynamic) action) {
+  void setUpdateFieldListener(String comp, String field, String actionKey,
+      void Function(dynamic) action) {
     if (comp == "") {
       if (fields.containsKey(field)) {
-        fields[field]?.setUpdateListener(key, action);
+        fields[field]?.setUpdateListener(actionKey, action);
       }
     } else {
       if (components.containsKey(comp)) {
-        components[comp]?.fields[field]?.setUpdateListener(key, action);
+        components[comp]?.fields[field]?.setUpdateListener(actionKey, action);
       }
     }
   }
 
-  void setpartialUpdateFieldListener(String comp, String key, String field,
-      void Function(String, dynamic) action) {
+  void setpartialUpdateFieldListener(String comp, String field,
+      String actionKey, void Function(String, dynamic) action) {
     if (comp == "") {
       if (fields.containsKey(field)) {
-        fields[field]?.setPartialUpdateListener(key, action);
+        fields[field]?.setPartialUpdateListener(actionKey, action);
       }
     } else {
       if (components.containsKey(comp)) {
-        components[comp]?.fields[field]?.setPartialUpdateListener(key, action);
+        components[comp]
+            ?.fields[field]
+            ?.setPartialUpdateListener(actionKey, action);
       }
     }
   }
@@ -227,9 +229,28 @@ class StateManger {
   }
 
   dynamic getField(String comp, String field) {
-    if (field == "") {
+    if (field == "" && comp == "") {
       throw Error();
     }
+
+    if (field == "" && comp != "") {
+      var co = components[comp];
+
+      var toSend = <String, dynamic>{};
+
+      if (co?.fields == null) {
+        return toSend;
+      }
+
+      var keys = co?.fields.keys;
+
+      for (var key in keys!) {
+        toSend[key] = co?.fields[key]?.value;
+      }
+
+      return toSend;
+    }
+
     if (comp == "") {
       return fields[field]?.getValue();
     } else {
@@ -237,15 +258,15 @@ class StateManger {
     }
   }
 
-  String addAction(String comp, String field, String key,
+  String addAction(String comp, String field, String actionKey,
       dynamic Function(dynamic, dynamic) action) {
     if (field == "") {
       return "empty field provided";
     }
     if (comp == "") {
-      fields[field]?.setAction(key, action);
+      fields[field]?.setAction(actionKey, action);
     } else {
-      components[comp]?.fields[field]?.setAction(key, action);
+      components[comp]?.fields[field]?.setAction(actionKey, action);
     }
     return "";
   }

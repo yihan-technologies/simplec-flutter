@@ -1,12 +1,30 @@
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simplec_flutter/simplec_flutter.dart';
 
 void main() {
-  test('adds one to input values', () {
-    final calculator = Calculator();
-    expect(calculator.addOne(2), 3);
-    expect(calculator.addOne(-7), -6);
-    expect(calculator.addOne(0), 1);
+  TestWidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
+  test('adds one to input values', () async {
+    final sc = Simplec(
+        ["ws://127.0.0.1:50090"], "1", "0", "test", {}, "flutter-test", 3);
+
+    var ts = "test";
+    var tsCode = ts.codeUnits;
+
+    sc.runner.addMultipleHandler("test", (ts) {
+      expect(tsCode[0], ts.dATA[0]);
+    });
+
+    await sc.runner.run();
+
+    final connected = await sc.runner.connect();
+
+    expect(connected, true);
+
+    if (!connected) return;
+
+    var sent = sc.runner.sendDynamic("realtime.m", "test", ts);
+    expect(sent, true);
   });
 }

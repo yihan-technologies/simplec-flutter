@@ -9,15 +9,17 @@ class Client {
   Map<String, String> data = <String, String>{};
   late IWebSocketHandler<List<int>, List<int>> ws;
   int pingTimeout = 3000;
+  late Timer pinger;
   late Timer reConnectTimeout;
   int reconnectInterval = 4000;
   int updatedReconnectInterval = 0;
-  int pingInterval = 3000;
+  int pingInterval = 5000;
   bool goodClose = false;
   int currentServerIndex = 0;
   List<List<int>> pending = [];
   Function(List<int>) handler;
   Logger log;
+  bool initialConnected = false;
 
   Client(this.urls, this.data, this.pingInterval, this.reconnectInterval,
       this.handler, this.log) {
@@ -38,14 +40,13 @@ class Client {
       connectionOptions: connectionOptions,
     );
 
-    connect();
+    //connect();
   }
 
   String getURL() {
-    currentServerIndex =
-        (DateTime.now().millisecondsSinceEpoch / 1000).floor() % urls.length;
+    //currentServerIndex = (DateTime.now().millisecondsSinceEpoch / 1000).floor() % urls.length;
 
-    String url = urls[currentServerIndex];
+    String url = (urls..shuffle()).first;
 
     List<String> keys = data.keys.toList();
 
@@ -77,41 +78,92 @@ class Client {
 
     ws.logEventStream.listen((debugEvent) {
       // ignore: avoid_print
-      log
-          .debug()
-          .interface("event", debugEvent)
-          .err(debugEvent.message)
-          .msg("log.debug.event.socket");
+
+      switch (debugEvent.socketLogEventType) {
+        case SocketLogEventType.error:
+          log
+              .error()
+              .interface("SOCKET STATUS", debugEvent.status.toString())
+              .err(debugEvent.message)
+              .interface("STRING", debugEvent.toString())
+              .msg("error.log.event.socket");
+          break;
+        case SocketLogEventType.warning:
+          log
+              .warn()
+              .interface("SOCKET STATUS", debugEvent.status.toString())
+              .err(debugEvent.message)
+              .interface("STRING", debugEvent.toString())
+              .msg("warn.log.event.socket");
+          break;
+        case SocketLogEventType.socketStateChanged:
+          log
+              .info()
+              .interface("SOCKET STATUS", debugEvent.status.toString())
+              .err(debugEvent.message)
+              .interface("STRING", debugEvent.toString())
+              .msg("state.change.log.event.socket");
+          break;
+        default:
+          log
+              .info()
+              .interface("SOCKET STATUS", debugEvent.status.toString())
+              .err(debugEvent.message)
+              .interface("EVENT TYPE", debugEvent.socketLogEventType.value)
+              .interface("STRING", debugEvent.toString())
+              .msg("state.change.log.event.socket");
+      }
+
       // print('> debug event: ${debugEvent.socketLogEventType}'
       //     ' ping=${debugEvent.pingMs} ms. Debug message=${debugEvent.message}');
     });
 
     ws.incomingMessagesStream.listen(handler, onError: (err) {
-      log.debug().err(err).msg("log.debug.event.incoming.socket");
+      log.error().err(err).msg("log.debug.event.incoming.socket");
     });
 
-    ws.outgoingMessagesStream.listen((inMsg) {
-      // ignore: avoid_print
-      log.debug().datta(inMsg).msg("log.debug.event.outgoing.socket");
-    });
+    // ws.outgoingMessagesStream.listen((inMsg) {
+    //   // ignore: avoid_print
+    //   log.debug().datta(inMsg).msg("log.debug.event.outgoing.socket");
+    // });
 
-    ws.socketHandlerStateStream.listen((event) {
-      switch (event.status) {
-        case SocketStatus.disconnected:
-          log.error().datta(event).msg("log.listen.state.disconnected.socket");
+    // ws.socketHandlerStateStream.listen((event) {
+    //   switch (event.status) {
+    //     case SocketStatus.disconnected:
+    //       log.error().datta(event).msg("log.listen.state.disconnected.socket");
+    //       reConnect();
+    //       break;
+    //     default:
+    //       log.info().datta(event).msg("log.listen.state.socket");
+    //   }
+    // });
+
+    var connected = await ws.connect();
+    if (connected) initialConnected = true;
+
+    //runPinger();
+
+    if (pending.isNotEmpty) {
+      var dontClear = false;
+
+      for (var ele in pending) {
+        var status = send(ele);
+        if (!status) {
+          dontClear = true;
           break;
-        default:
-          log.error().datta(event).msg("log.listen.state.socket");
+        }
       }
-    });
 
-    return await ws.connect();
+      if (!dontClear) pending = [];
+    }
+
+    return connected;
   }
 
   void reConnect() {
     if (!goodClose &&
         ws.socketHandlerState.status == SocketStatus.disconnected) {
-      print("reconnect: ");
+      log.info().datta("reconnecting").msg("reconnecting.client.socket");
       if (!reConnectTimeout.isActive) {
         if (updatedReconnectInterval == 0) {
           updatedReconnectInterval = reconnectInterval;
@@ -167,6 +219,29 @@ class Client {
     //   this.reConnectTimeout.cancel();
     // }
     ws.close();
+  }
+
+  void runPinger() {
+    var interval = pingInterval;
+
+    if (pinger.isActive) pinger.cancel();
+
+    if (ws.socketState.status == SocketStatus.connected) {
+      send([]);
+    } else {
+      interval = 4000;
+    }
+
+    pinger = Timer(Duration(milliseconds: interval), () => runPinger());
+  }
+
+  bool send(List<int> data) {
+    if (!initialConnected || ws.socketState.status != SocketStatus.connected) {
+      addToPending(data);
+      return false;
+    }
+
+    return ws.sendMessage(data);
   }
 
   void addToPending(List<int> data) {

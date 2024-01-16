@@ -11,6 +11,7 @@
 
 import 'dart:core' as $core;
 
+import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class Transfer extends $pb.GeneratedMessage {
@@ -235,6 +236,226 @@ class TransferSingle extends $pb.GeneratedMessage {
   $core.bool hasID() => $_has(3);
   @$pb.TagNumber(4)
   void clearID() => clearField(4);
+}
+
+class NotifierStandardReturn extends $pb.GeneratedMessage {
+  factory NotifierStandardReturn({
+    $fixnum.Int64? code,
+    $core.String? message,
+  }) {
+    final $result = create();
+    if (code != null) {
+      $result.code = code;
+    }
+    if (message != null) {
+      $result.message = message;
+    }
+    return $result;
+  }
+  NotifierStandardReturn._() : super();
+  factory NotifierStandardReturn.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory NotifierStandardReturn.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'NotifierStandardReturn', package: const $pb.PackageName(_omitMessageNames ? '' : 'grpcgen'), createEmptyInstance: create)
+    ..a<$fixnum.Int64>(1, _omitFieldNames ? '' : 'Code', $pb.PbFieldType.OU6, protoName: 'Code', defaultOrMaker: $fixnum.Int64.ZERO)
+    ..aOS(2, _omitFieldNames ? '' : 'Message', protoName: 'Message')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  NotifierStandardReturn clone() => NotifierStandardReturn()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  NotifierStandardReturn copyWith(void Function(NotifierStandardReturn) updates) => super.copyWith((message) => updates(message as NotifierStandardReturn)) as NotifierStandardReturn;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static NotifierStandardReturn create() => NotifierStandardReturn._();
+  NotifierStandardReturn createEmptyInstance() => create();
+  static $pb.PbList<NotifierStandardReturn> createRepeated() => $pb.PbList<NotifierStandardReturn>();
+  @$core.pragma('dart2js:noInline')
+  static NotifierStandardReturn getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<NotifierStandardReturn>(create);
+  static NotifierStandardReturn? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $fixnum.Int64 get code => $_getI64(0);
+  @$pb.TagNumber(1)
+  set code($fixnum.Int64 v) { $_setInt64(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasCode() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearCode() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get message => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set message($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasMessage() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearMessage() => clearField(2);
+}
+
+class ChangeState extends $pb.GeneratedMessage {
+  factory ChangeState({
+    $core.String? comp,
+    $core.String? field_2,
+    $core.String? action,
+    $core.String? value,
+  }) {
+    final $result = create();
+    if (comp != null) {
+      $result.comp = comp;
+    }
+    if (field_2 != null) {
+      $result.field_2 = field_2;
+    }
+    if (action != null) {
+      $result.action = action;
+    }
+    if (value != null) {
+      $result.value = value;
+    }
+    return $result;
+  }
+  ChangeState._() : super();
+  factory ChangeState.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory ChangeState.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ChangeState', package: const $pb.PackageName(_omitMessageNames ? '' : 'grpcgen'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'Comp', protoName: 'Comp')
+    ..aOS(2, _omitFieldNames ? '' : 'Field', protoName: 'Field')
+    ..aOS(3, _omitFieldNames ? '' : 'Action', protoName: 'Action')
+    ..aOS(4, _omitFieldNames ? '' : 'Value', protoName: 'Value')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  ChangeState clone() => ChangeState()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  ChangeState copyWith(void Function(ChangeState) updates) => super.copyWith((message) => updates(message as ChangeState)) as ChangeState;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static ChangeState create() => ChangeState._();
+  ChangeState createEmptyInstance() => create();
+  static $pb.PbList<ChangeState> createRepeated() => $pb.PbList<ChangeState>();
+  @$core.pragma('dart2js:noInline')
+  static ChangeState getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ChangeState>(create);
+  static ChangeState? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get comp => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set comp($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasComp() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearComp() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get field_2 => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set field_2($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasField_2() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearField_2() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get action => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set action($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasAction() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearAction() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.String get value => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set value($core.String v) { $_setString(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasValue() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearValue() => clearField(4);
+}
+
+class SaveLocal extends $pb.GeneratedMessage {
+  factory SaveLocal({
+    $core.String? key,
+    $core.String? value,
+  }) {
+    final $result = create();
+    if (key != null) {
+      $result.key = key;
+    }
+    if (value != null) {
+      $result.value = value;
+    }
+    return $result;
+  }
+  SaveLocal._() : super();
+  factory SaveLocal.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory SaveLocal.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SaveLocal', package: const $pb.PackageName(_omitMessageNames ? '' : 'grpcgen'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'Key', protoName: 'Key')
+    ..aOS(2, _omitFieldNames ? '' : 'Value', protoName: 'Value')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  SaveLocal clone() => SaveLocal()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  SaveLocal copyWith(void Function(SaveLocal) updates) => super.copyWith((message) => updates(message as SaveLocal)) as SaveLocal;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static SaveLocal create() => SaveLocal._();
+  SaveLocal createEmptyInstance() => create();
+  static $pb.PbList<SaveLocal> createRepeated() => $pb.PbList<SaveLocal>();
+  @$core.pragma('dart2js:noInline')
+  static SaveLocal getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<SaveLocal>(create);
+  static SaveLocal? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get key => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set key($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasKey() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearKey() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get value => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set value($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasValue() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearValue() => clearField(2);
 }
 
 
