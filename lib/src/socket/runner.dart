@@ -7,7 +7,7 @@ import '../proto/public.pb.dart';
 import '../logger/logger.dart';
 
 class SeqEventRunner {
-  List<dynamic Function(TransferSingle)> seq = [];
+  List<dynamic Function(dynamic)> seq = [];
   late dynamic Function(TransferSingle) init;
 
   SeqEventRunner() {
@@ -28,11 +28,10 @@ class EventRunner {
   late SeqEventRunner seq;
   List<void Function(TransferSingle)> callbacks = [];
   List<void Function(Transfer)> callbacksSingle = [];
+  Map<String, Function(TransferSingle)> subEventRunners = {};
 
   EventRunner() {
     seq = SeqEventRunner();
-    callbacks = [];
-    callbacksSingle = [];
   }
 }
 
@@ -71,7 +70,9 @@ class Runner {
     if (trans.iNS == 'realtime.s.s.m') {
       for (var i = 0; i < trans.oBJS.length; i++) {
         var ele = trans.oBJS[i];
+
         var runner = runners[ele.iNS];
+
         if (runner == null) {
           var raw = logger
               .error()
@@ -80,25 +81,57 @@ class Runner {
           sendLog(raw);
           return;
         }
+
         for (var ind = 0; ind < runner.callbacks.length; ind++) {
           var callback = runner.callbacks[ind];
           callback(ele);
         }
+
         runner.seq.runSeq(ele);
       }
     } else if (trans.iNS.startsWith('realtime.s.s.s')) {
       var runner = runners[trans.iNS];
-      if (runner != null) {
-        for (var i = 0; i < runner.callbacksSingle.length; i++) {
-          var ele = runner.callbacksSingle[i];
-          ele(trans);
-        }
-      } else {
+
+      if (runner == null) {
         var raw = logger
             .error()
             .interface("instruction", trans.iNS)
             .getMsg(".no.runner.invalid.instruction.socket");
         sendLog(raw);
+        return;
+      }
+
+      for (var i = 0; i < runner.callbacksSingle.length; i++) {
+        var ele = runner.callbacksSingle[i];
+        ele(trans);
+      }
+    } else if (trans.iNS.startsWith('realtime.s.e')) {
+      var event = trans.cRED["event"];
+
+      var runner = runners[event];
+
+      if (runner == null) {
+        var raw = logger
+            .error()
+            .interface("instruction", trans.iNS)
+            .getMsg(".no.runner.invalid.event.socket");
+        sendLog(raw);
+        return;
+      }
+
+      for (var ele in trans.oBJS) {
+        var sub = runner.subEventRunners[ele.iNS];
+
+        if (sub == null) {
+          var raw = logger
+              .error()
+              .interface("instruction", ele.iNS)
+              .getMsg("no,sub.event.runner.event.socket");
+          sendLog(raw);
+          continue;
+        }
+
+        sub(ele);
       }
     } else {
       var raw = logger
@@ -118,10 +151,47 @@ class Runner {
 
   void addSingleHandler(String key, void Function(Transfer) handler) {
     checkRunner(key);
-    var runner = runners[key];
-    if (runner == null) return;
-    runner.callbacksSingle.add(handler);
-    runners[key] = runner;
+    runners[key]?.callbacksSingle.add(handler);
+  }
+
+  void removeSingleHandler(String key, int hash) {
+    checkRunner(key);
+    var callbacks = runners[key]?.callbacksSingle;
+    if (callbacks == null) return;
+    var index = -1;
+    for (var i = 0; i < callbacks.length; i++) {
+      if (callbacks[i].hashCode == hash) {
+        index = i;
+        break;
+      }
+    }
+    if (index > -1) {
+      runners[key]?.callbacksSingle.removeAt(index);
+    }
+  }
+
+  bool addEventHandler(
+      String event, String subEvent, void Function(TransferSingle) handler) {
+    checkRunner(event);
+
+    runners[event]?.subEventRunners[subEvent] = handler;
+
+    return sendRaw("realtime.m", "event.subscribe", event.codeUnits);
+  }
+
+  void removeEventSubHandler(String event, String subEvent) {
+    checkRunner(event);
+
+    runners[event]?.subEventRunners.remove(subEvent);
+
+    //return sendDynamic("realtime.m", "event.subscribe", event.codeUnits);
+  }
+
+  bool removeEventHandler(String event) {
+    checkRunner(event);
+    var ret = sendDynamic("realtime.m", "event.unsubscribe", event.codeUnits);
+    runners[event]?.subEventRunners = {};
+    return ret;
   }
 
   void resetHandler(String key) {
@@ -130,28 +200,35 @@ class Runner {
 
   void addMultipleHandler(String key, void Function(TransferSingle) handler) {
     checkRunner(key);
-    var runner = runners[key];
-    if (runner == null) return;
-    runner.callbacks.add(handler);
-    runners[key] = runner;
+    runners[key]?.callbacks.add(handler);
+  }
+
+  void removeMultipleHandler(String key, int hash) {
+    checkRunner(key);
+    var callbacks = runners[key]?.callbacks;
+    if (callbacks == null) return;
+    var index = -1;
+    for (var i = 0; i < callbacks.length; i++) {
+      if (callbacks[i].hashCode == hash) {
+        index = i;
+        break;
+      }
+    }
+    if (index > -1) {
+      runners[key]?.callbacks.removeAt(index);
+    }
   }
 
   void addSequenceHandler(
       String key, dynamic Function(TransferSingle) handler) {
     checkRunner(key);
-    var runner = runners[key];
-    if (runner == null) return;
-    runner.seq.init = handler;
-    runners[key] = runner;
+    runners[key]?.seq.init = handler;
   }
 
   void addSequenceHandle(
       String key, int index, dynamic Function(dynamic) handler) {
     checkRunner(key);
-    var runner = runners[key];
-    if (runner == null) return;
-    runner.seq.seq[index] = handler;
-    runners[key] = runner;
+    runners[key]?.seq.seq[index] = handler;
   }
 
   bool sendData(Transfer data) {
@@ -173,6 +250,13 @@ class Runner {
   bool sendDynamic(String transIns, String singleIns, dynamic dat) {
     var encoded = json.encode(dat);
     var single = TransferSingle(dATA: encoded.codeUnits, iNS: singleIns);
+    var trans = Transfer(iNS: transIns, oBJS: [single]);
+
+    return sendData(trans);
+  }
+
+  bool sendRaw(String transIns, String singleIns, List<int> data) {
+    var single = TransferSingle(dATA: data, iNS: singleIns);
     var trans = Transfer(iNS: transIns, oBJS: [single]);
 
     return sendData(trans);
