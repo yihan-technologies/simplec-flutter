@@ -2,7 +2,7 @@ import 'package:websocket_universal/websocket_universal.dart';
 import 'dart:convert';
 
 import 'client.dart';
-import '../storage.dart';
+import '../../storage.dart';
 import '../proto/public.pb.dart';
 import '../logger/logger.dart';
 

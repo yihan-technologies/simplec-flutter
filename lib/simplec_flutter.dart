@@ -5,7 +5,7 @@ import './src/stateManager/StateManager.dart';
 import './src/socket/runner.dart';
 import './src/proto/public.pb.dart';
 import './src/logger/logger.dart';
-import './src/storage.dart';
+import 'storage.dart';
 
 class Simplec {
   late StateManger stateManager;
