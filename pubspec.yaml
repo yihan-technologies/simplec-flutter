@@ -1,10 +1,10 @@
 name: simplec_flutter
 description: "A new Flutter package project."
 version: 0.0.1
-homepage:
+homepage: moment.yihan.org.ng
 
 environment:
-  sdk: '>=3.2.3 <4.0.0'
+  sdk: '>=3.2.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
