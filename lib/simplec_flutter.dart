@@ -35,8 +35,6 @@ class Simplec {
 
     log = Logger(level: logLevel, service: service);
 
-    print(urls);
-
     runner = Runner(urls, da, log);
 
     runner.addMultipleHandler("state.change", (TransferSingle ts) {
